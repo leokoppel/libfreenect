@@ -69,7 +69,8 @@ int freenect_update_tilt_state(freenect_device *dev)
 }
 
 int freenect_set_tilt_degs(freenect_device *dev, double angle)
-{
+{	
+
 	int ret;
 	uint8_t empty[0x1];
 

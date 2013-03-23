@@ -189,6 +189,13 @@ FN_INTERNAL int fnusb_open_subdevices(freenect_device *dev, int index)
 
 		if (desc.idVendor != VID_MICROSOFT)
 			continue;
+		
+
+		printf("theo: device %i - \n", i); 
+		printf("theo: subdevices? %i - \n", (ctx->enabled_subdevices & FREENECT_DEVICE_CAMERA)); 
+		printf("theo: idProduct = cam? %i - \n", ( desc.idProduct == PID_NUI_CAMERA)); 
+		printf("theo: nr_cam == index ? %i - \n", (nr_cam == index)); 
+		 		
 
 		// Search for the camera
 		if ((ctx->enabled_subdevices & FREENECT_DEVICE_CAMERA) && !dev->usb_cam.dev && desc.idProduct == PID_NUI_CAMERA) {
@@ -196,6 +203,7 @@ FN_INTERNAL int fnusb_open_subdevices(freenect_device *dev, int index)
 			if (nr_cam == index) {
 				res = libusb_open (devs[i], &dev->usb_cam.dev);
 				if (res < 0 || !dev->usb_cam.dev) {
+					printf("theo: couldn't open camera\n");
 					FN_ERROR("Could not open camera: %d\n", res);
 					dev->usb_cam.dev = NULL;
 					break;
@@ -214,7 +222,11 @@ FN_INTERNAL int fnusb_open_subdevices(freenect_device *dev, int index)
 				}
 #endif
 				res = libusb_claim_interface (dev->usb_cam.dev, 0);
+       //Theo - for now we just say the motor is the same device as the camera
+       dev->usb_motor.dev = dev->usb_cam.dev;
+
 				if (res < 0) {
+					printf("theo: Could not claim interface on camera\n");
 					FN_ERROR("Could not claim interface on camera: %d\n", res);
 					libusb_close(dev->usb_cam.dev);
 					dev->usb_cam.dev = NULL;
@@ -226,6 +238,7 @@ FN_INTERNAL int fnusb_open_subdevices(freenect_device *dev, int index)
 		}
 
 		// Search for the motor
+/* Theo
 		if ((ctx->enabled_subdevices & FREENECT_DEVICE_MOTOR) && !dev->usb_motor.dev && desc.idProduct == PID_NUI_MOTOR) {
 			// If the index given by the user matches our camera index
 			if (nr_mot == index) {
@@ -246,6 +259,7 @@ FN_INTERNAL int fnusb_open_subdevices(freenect_device *dev, int index)
 				nr_mot++;
 			}
 		}
+*/
 
 #ifdef BUILD_AUDIO
 		// TODO: check that the firmware has already been loaded; if not, upload firmware.
@@ -364,6 +378,16 @@ FN_INTERNAL int fnusb_open_subdevices(freenect_device *dev, int index)
 	}
 
 	libusb_free_device_list (devs, 1);  // free the list, unref the devices in it
+//Theo
+printf("theo: cam device: %i\n", dev->usb_cam.dev );
+printf("theo: cam device enabled: %i\n", (ctx->enabled_subdevices & FREENECT_DEVICE_CAMERA));
+
+printf("theo: motor device: %i\n", dev->usb_motor.dev );
+printf("theo: motor device enabled: %i\n", (ctx->enabled_subdevices & FREENECT_DEVICE_MOTOR));
+
+printf("theo: cam passes test: %i \n", (dev->usb_cam.dev || !(ctx->enabled_subdevices & FREENECT_DEVICE_CAMERA)) );
+printf("theo: motor passes test: %i \n", (dev->usb_motor.dev || !(ctx->enabled_subdevices & FREENECT_DEVICE_MOTOR)) );
+
 
 	// Check that each subdevice is either opened or not enabled.
 	if ( (dev->usb_cam.dev || !(ctx->enabled_subdevices & FREENECT_DEVICE_CAMERA))
@@ -388,6 +412,10 @@ FN_INTERNAL int fnusb_open_subdevices(freenect_device *dev, int index)
 			libusb_close(dev->usb_audio.dev);
 		}
 #endif
+
+		//Theo
+		printf("theo: something failed\n");
+
 		return -1;
 	}
 }

@@ -161,6 +161,7 @@ FREENECTAPI int freenect_open_device(freenect_context *ctx, freenect_device **de
 
 	res = fnusb_open_subdevices(pdev, index);
 	if (res < 0) {
+		printf("theo: fnusb_open_subdevices failed\n"); 
 		free(pdev);
 		return res;
 	}
@@ -179,6 +180,7 @@ FREENECTAPI int freenect_open_device(freenect_context *ctx, freenect_device **de
 	// Do device-specific initialization
 	if (pdev->usb_cam.dev) {
 		if (freenect_camera_init(pdev) < 0) {
+			printf("theo: freenect_camera_init failed\n");
 			return -1;
 		}
 	}

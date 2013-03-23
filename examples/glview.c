@@ -269,7 +269,8 @@ void *gl_threadfunc(void *arg)
 	InitGL(1280, 480);
 
 	glutMainLoop();
-
+	
+	printf("window: %d\n", window);
 	return NULL;
 }
 
@@ -425,7 +426,9 @@ int main(int argc, char **argv)
 	}
 
 	freenect_set_log_level(f_ctx, FREENECT_LOG_DEBUG);
-	freenect_select_subdevices(f_ctx, (freenect_device_flags)(FREENECT_DEVICE_MOTOR | FREENECT_DEVICE_CAMERA));
+	//freenect_select_subdevices(f_ctx, (freenect_device_flags)(FREENECT_DEVICE_MOTOR | FREENECT_DEVICE_CAMERA));
+ freenect_select_subdevices(f_ctx, (freenect_device_flags)(FREENECT_DEVICE_CAMERA | FREENECT_DEVICE_AUDIO));
+
 
 	int nr_devices = freenect_num_devices (f_ctx);
 	printf ("Number of devices found: %d\n", nr_devices);
